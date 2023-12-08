@@ -5,15 +5,10 @@
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": [
-      "backend/tsconfig.json"
-    ]
+    "project": ["./tsconfig.json"]
   },
-  "extends": "airbnb-typescript/base",
-  "plugins": [
-    "import",
-    "@typescript-eslint"
-  ],
+  "extends": ["airbnb-typescript/base", "plugin:prettier/recommended"],
+  "plugins": ["import", "@typescript-eslint", "prettier"],
   "rules": {
     "comma-dangle": 0,
     "no-underscore-dangle": 0,
@@ -25,10 +20,7 @@
   },
   "settings": {
     "import/parsers": {
-      "@typescript-eslint/parser": [
-        ".ts",
-        ".tsx"
-      ]
+      "@typescript-eslint/parser": [".ts", ".tsx"]
     },
     "import/resolver": {
       "typescript": {}

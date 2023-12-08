@@ -10,5 +10,4 @@ router.get<{}, MessageResponse>('/', (req, res) => {
   });
 });
 
-
 export default router;
