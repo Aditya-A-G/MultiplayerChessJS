@@ -9,7 +9,8 @@
     "build": "tsc",
     "lint": "eslint --fix src ",
     "test": "jest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "cd .. && husky install backend/.husky"
   },
   "keywords": [],
   "author": "Aditya Ghadge <adityaghadge360@gmail.com>",
@@ -40,6 +41,7 @@
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^8.0.3",
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.1.0",
