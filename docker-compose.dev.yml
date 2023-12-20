@@ -1,0 +1,12 @@
+version: '3'
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./backend:/app:ro
+      - /app/node_modules
+    
+    command: npm run dev
