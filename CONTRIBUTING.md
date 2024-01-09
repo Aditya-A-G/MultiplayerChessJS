@@ -8,7 +8,8 @@ To set up the development environment, please follow the steps outlined below.
 
 1. Clone the repository: `git clone https://github.com/your-username/MultiplayerChessJS.git`
 2. Navigate to the project directory: `cd MultiplayerChessJS`
-3. Install dependencies: `npm install`
+3. Run Docker Compose: `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d`
+   - **Note:** If `docker-compose` does not work for you, please use `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`.
 
 ## How to Contribute
 
