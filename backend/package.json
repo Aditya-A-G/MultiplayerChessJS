@@ -37,7 +37,7 @@
     "@types/node": "^20.10.6",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
-    "@typescript-eslint/parser": "^6.16.0",
+    "@typescript-eslint/parser": "^6.18.1",
     "eslint": "^8.54.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-prettier": "^9.1.0",
