@@ -8,5 +8,9 @@ services:
     volumes:
       - ./backend:/app:ro
       - /app/node_modules
+    environment:
+      - MONGO_USER=test
+      - MONGO_PASSWORD=test
+      - SESSION_SECRET=secret
     
     command: npm run dev
