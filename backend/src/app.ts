@@ -2,25 +2,25 @@ import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
-
-import * as middlewares from './middlewares';
 import api from './api';
-import MessageResponse from './interfaces/MessageResponse';
-
-require('dotenv').config();
+import passport from './config/passport';
+import sessionConfig from './config/session';
+import { connectWithRetry } from './config/mongoDb';
+import * as middlewares from './middlewares';
 
 const app = express();
+
+connectWithRetry();
 
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
-app.use(express.json());
+app.use(sessionConfig);
 
-app.get<{}, MessageResponse>('/', (req, res) => {
-  res.json({
-    message: '🦄🌈✨👋🌎🌍🌏✨🌈🦄',
-  });
-});
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(express.json());
 
 app.use('/api/v1', api);
 

@@ -5,4 +5,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: production    
+    environment:
+      - MONGO_USER=test
+      - MONGO_PASSWORD=test
+      - SESSION_SECRET=secret
+      
     command: npm start
