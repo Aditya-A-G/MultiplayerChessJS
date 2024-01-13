@@ -12,5 +12,14 @@ services:
       - MONGO_USER=test
       - MONGO_PASSWORD=test
       - SESSION_SECRET=secret
-    
+    command: npm run dev
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     command: npm run dev
