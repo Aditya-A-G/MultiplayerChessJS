@@ -23,5 +23,8 @@ export default defineConfig({
     host: true,
     strictPort: true,
     port: Number(process.env.PORT),
+    watch: {
+      usePolling: true,
+    },
   },
 });
