@@ -5,3 +5,7 @@ export const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 export const REDIS_URL = process.env.REDIS_URL || 'redis';
 export const REDIS_PORT = process.env.REDIS_PORT || 6379;
 export const SESSION_SECRET = process.env.SESSION_SECRET || 'dev';
+export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || [
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
