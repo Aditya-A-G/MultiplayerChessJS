@@ -14,10 +14,8 @@ function LogOutButton() {
   };
 
   return (
-    <div className="border-red-700 w-full h-10 flex justify-end pr-5 pt-4">
-      <Button onClick={logOut} className="">
-        LogOut
-      </Button>
+    <div className="w-full h-16 flex justify-end items-center pr-4">
+      <Button onClick={logOut}>LogOut</Button>
     </div>
   );
 }
