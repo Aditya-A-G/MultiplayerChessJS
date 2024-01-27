@@ -1,5 +1,6 @@
 import express from 'express';
 import user from './routes/userRoutes';
+import game from './routes/gameRoutes';
 import MessageResponse from '../interfaces/MessageResponse';
 import { isAuthenticated } from './middlewares/authMiddleware';
 
@@ -18,5 +19,6 @@ router.get<{}, MessageResponse>('/', isAuthenticated, (req, res) => {
 });
 
 router.use('/users', user);
+router.use('/games', game)
 
 export default router;

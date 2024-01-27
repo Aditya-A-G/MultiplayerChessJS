@@ -32,7 +32,8 @@
     "morgan": "^1.10.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "redis": "^4.6.12"
+    "redis": "^4.6.12",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.4",
@@ -47,6 +48,7 @@
     "@types/passport": "^1.0.16",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.2",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.18.1",
     "eslint": "^8.54.0",
