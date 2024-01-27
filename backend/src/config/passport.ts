@@ -38,7 +38,7 @@ const strategy = new LocalStrategy(verifyCallback);
 
 passport.use(strategy);
 
-passport.serializeUser((user: any, done) => {
+passport.serializeUser((user, done) => {
   done(null, user._id);
 });
 
