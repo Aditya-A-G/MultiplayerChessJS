@@ -1,38 +1,38 @@
 import { Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { AxiosError } from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Separator from '@/components/ui/separator';
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-  Form,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { createNewGame } from '@/lib/api';
 
 function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
+  const [createGameError, setCreateGameError] = useState<null | string>(null);
 
-  const form = useForm({
-    defaultValues: {
-      name: '',
-      favoriteColor: 'white',
-    },
-  });
+  const navigate = useNavigate();
 
-  // TODO: fix this function
-  async function onSubmit(formData: { name: string; favoriteColor: string }) {
+  async function createGame() {
     setIsLoading(true);
-    
-    setTimeout(() => {
+
+    try {
+      const { gameId } = await createNewGame();
+
+      if (gameId) {
+        navigate(`/games/${gameId}`);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.status === 401) {
+          navigate('/login');
+        }
+      }
+
+      setCreateGameError('An error occurred. Please try again later.');
+    } finally {
       setIsLoading(false);
-      form.reset();
-    }, 3000);
+    }
   }
 
   return (
@@ -42,68 +42,21 @@ function Dashboard() {
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl lg:text-4xl">GAME</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4 lg:w-1/2 ">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-2"
-              >
-                <FormField
-                  control={form.control}
-                  rules={{ required: 'Name is required' }}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-base">Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="favoriteColor"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>Favorite Color</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex flex-col space-y-1"
-                        >
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="white" />
-                            </FormControl>
-                            <FormLabel className="font-normal">White</FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="black" />
-                            </FormControl>
-                            <FormLabel className="font-normal">Black</FormLabel>
-                          </FormItem>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  className="w-full text-base"
-                  disabled={!!isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}{' '}
-                  Create Game
-                </Button>
-              </form>
-            </Form>
+          <CardContent className="my-14 lg:w-1/2 ">
+            {createGameError && (
+              <div className="text-red-500">{createGameError}</div>
+            )}
+            <Button
+              type="submit"
+              className="w-full text-base"
+              disabled={!!isLoading}
+              onClick={() => createGame()}
+            >
+              Create Game
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+            </Button>
           </CardContent>
         </div>
       </section>

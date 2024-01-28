@@ -39,3 +39,8 @@ export const checkAuthentication = async () => {
   );
   return response.data;
 };
+
+export const createNewGame = async () => {
+  const response = await axiosInstance.post(`${API_BASE_URL}/games/`);
+  return response.data;
+};

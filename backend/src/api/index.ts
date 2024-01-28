@@ -19,6 +19,6 @@ router.get<{}, MessageResponse>('/', isAuthenticated, (req, res) => {
 });
 
 router.use('/users', user);
-router.use('/games', game)
+router.use('/games', game);
 
 export default router;

@@ -106,10 +106,10 @@ export default function Login() {
                 className="w-full text-base"
                 disabled={!!isLoading}
               >
+                Login
                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}{' '}
-                Login
+                ) : null}
               </Button>
             </form>
           </Form>
