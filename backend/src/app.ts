@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import api from './api';
 import passport from './config/passport';
-import sessionConfig from './config/session';
+import sessionParser from './config/session';
 import { ALLOWED_ORIGINS } from './config/config';
 import { connectWithRetry } from './config/mongoDb';
 import * as middlewares from './middlewares';
@@ -28,7 +28,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(sessionConfig);
+app.use(sessionParser);
 
 app.use(passport.initialize());
 app.use(passport.session());
