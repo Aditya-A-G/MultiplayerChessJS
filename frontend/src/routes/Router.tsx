@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import NotFound from '../pages/NotFound';
 import Dashboard from '../pages/Dashboard';
+import Game from '../pages/Game';
 import SignUp from '../pages/SignUp';
 import Login from '../pages/Login';
 import ProtectedRoute from './ProtectedRoute';
@@ -19,6 +20,14 @@ function Router() {
       element: (
         <AuthProvider>
           <ProtectedRoute element={<Dashboard />} />
+        </AuthProvider>
+      ),
+    },
+    {
+      path: '/games/:gameId',
+      element: (
+        <AuthProvider>
+          <ProtectedRoute element={<Game />} />
         </AuthProvider>
       ),
     },
