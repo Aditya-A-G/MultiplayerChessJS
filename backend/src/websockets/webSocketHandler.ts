@@ -1,7 +1,8 @@
 import { WebSocketServer } from 'ws';
-import sessionParser from './config/session';
+import sessionParser from '../config/session';
 import { Request, Response } from 'express';
 import { Duplex } from 'stream';
+import { handleJoinGame } from '../api/sockets/gameHandler';
 
 const wss = new WebSocketServer({ noServer: true });
 
@@ -42,11 +43,19 @@ export async function handleWebSocketUpgrade(
 export function handleWebSocketConnection(socket: any, userId: string) {
   socket.userId = userId;
 
-  socket.on('message', (message: any) => {
-    console.log(
-      `Received ${message.toLocaleString()} from user: ${socket.userId}`
-    );
-    socket.send('thanks for your message!');
+  socket.on('message', (message: string) => {
+    const payload = JSON.parse(message);
+
+    switch (payload.method) {
+      case 'joinGame':
+        handleJoinGame(socket, userId, payload);
+        break;
+      default:
+        console.log(
+          `Received ${message.toLocaleString()} from user: ${socket.userId}`
+        );
+        socket.send('thanks for your message!');
+    }
   });
 }
 

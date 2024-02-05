@@ -1,25 +1,11 @@
-import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import useGameWebSocket from '@/hooks/useGameWebSocket';
 
 function Game() {
-  useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3000/');
+  const { gameId } = useParams();
 
-    ws.addEventListener('open', () => {
-      ws.send('hello there!');
-    });
+  useGameWebSocket(gameId as string);
 
-    ws.addEventListener('message', (event) => {
-      console.log('Message from server: ', event.data);
-    });
-
-    ws.addEventListener('close', (event) => {
-      console.log('WebSocket connection closed: ', event);
-    });
-
-    return () => {
-      ws.close();
-    };
-  }, []);
   return <h1>Game Page</h1>;
 }
 
