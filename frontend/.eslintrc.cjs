@@ -16,7 +16,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: './tsconfig.json',
+    project: 'tsconfig.json',
+    tsconfigRootDir: __dirname,
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
@@ -25,6 +26,6 @@ module.exports = {
     'react/require-default-props': 0,
     'react/jsx-props-no-spreading': 0,
     'react/prop-types': 0,
-    'react/jsx-no-constructed-context-values': 0
+    'react/jsx-no-constructed-context-values': 0,
   },
 };
