@@ -1,6 +1,6 @@
 import session from 'express-session';
 import RedisStore from 'connect-redis';
-import redisClient from './redis';
+import { redisClient } from './redis';
 import { SESSION_SECRET } from './config';
 
 const sessionParser = session({

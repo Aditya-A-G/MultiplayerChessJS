@@ -7,7 +7,12 @@ const redisClient = createClient({
     port: Number(REDIS_PORT),
   },
 });
+const publisher = redisClient;
 
 redisClient.connect().catch(console.error);
 
-export default redisClient;
+const subscriber = redisClient.duplicate();
+
+subscriber.connect().catch(console.error);
+
+export { redisClient, publisher, subscriber };
