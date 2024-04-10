@@ -10,6 +10,8 @@ export const createGame = async (req: Request, res: Response) => {
       state: 'default',
       status: 'waiting',
       whoseTurn: '',
+      white: '',
+      black: '',
     });
 
     res.json({ gameId });

@@ -2,7 +2,11 @@ import { WebSocketServer } from 'ws';
 import sessionParser from '../config/session';
 import { Request, Response } from 'express';
 import { Duplex } from 'stream';
-import { handleJoinGame } from '../api/sockets/gameHandler';
+import {
+  handleGameEnd,
+  handleJoinGame,
+  handleMakeMove,
+} from '../api/sockets/gameHandler';
 
 const wss = new WebSocketServer({ noServer: true });
 
@@ -49,6 +53,12 @@ export function handleWebSocketConnection(socket: any, userId: string) {
     switch (payload.method) {
       case 'joinGame':
         handleJoinGame(socket, userId, payload);
+        break;
+      case 'makeMove':
+        handleMakeMove(socket, userId, payload);
+        break;
+      case 'endGame':
+        handleGameEnd(socket, userId, payload);
         break;
       default:
         console.log(
