@@ -7,7 +7,7 @@ export const createGame = async (req: Request, res: Response) => {
     const gameId = uuidv4();
 
     await redisClient.hSet(`games:${gameId}`, {
-      state: 'default',
+      state: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
       status: 'waiting',
       whoseTurn: '',
       white: '',
