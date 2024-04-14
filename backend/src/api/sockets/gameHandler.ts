@@ -4,6 +4,57 @@ import {
   deleteUserConnection,
   getUserConnection,
 } from '../../store/user';
+import { GameModel } from '../models/gameModel';
+
+function getGameIdFromChannel(channel: string): string | null {
+  const match = channel.match(/^games:(.*)$/);
+  return match ? match[1] : null;
+}
+
+async function onMessage(message: string, channel: string) {
+  const parsedPayload = JSON.parse(message);
+  const gameId = getGameIdFromChannel(channel);
+
+  if (parsedPayload.method === 'opponentLeft') {
+    const remainingPlayerConnection = getUserConnection(
+      parsedPayload.remainingPlayerUserId
+    );
+
+    if (remainingPlayerConnection === undefined) return;
+
+    const opponentLeftPayload = {
+      method: 'opponentLeft',
+    };
+
+    remainingPlayerConnection.send(JSON.stringify(opponentLeftPayload));
+  }
+  if (parsedPayload.method === 'makeMove') {
+    const connection = getUserConnection(parsedPayload.to);
+
+    if (!connection) return;
+    return connection.send(
+      JSON.stringify({
+        method: 'opponentMove',
+        move: parsedPayload.move,
+        whoseTurn: parsedPayload.to,
+      })
+    );
+  }
+
+  if (parsedPayload.method === 'deleteUserConnection') {
+    deleteUserConnection(parsedPayload.userId);
+    subscriber.unsubscribe(`games:${gameId}`);
+  }
+
+  const players = await redisClient.sMembers(`games:${gameId}:users`);
+
+  players.forEach((player) => {
+    const connection = getUserConnection(player);
+    if (connection) {
+      connection.send(message);
+    }
+  });
+}
 
 export async function handleJoinGame(
   socket: any,
@@ -71,8 +122,25 @@ export async function handleJoinGame(
         })
       );
     }
+    const ttl = await redisClient.TTL(`leftTheGame:${userId}`);
+    if (ttl >= 0 && ttl < 5) {
+      return socket.send(
+        JSON.stringify({
+          method: 'gameClosed',
+        })
+      );
+    } else if (ttl >= 5) {
+      await redisClient.DEL(`leftTheGame:${userId}`);
+    }
+
+    subscriber.subscribe(`games:${payload.data.gameId}`, onMessage);
 
     addUserConnection(userId, socket);
+
+    const userWithWhiteColor = await redisClient.hGet(
+      `games:${payload.data.gameId}`,
+      'white'
+    );
 
     return socket.send(
       JSON.stringify({
@@ -83,45 +151,26 @@ export async function handleJoinGame(
           gameStatus: 'gameStarted',
           gameState: gameState,
           whoseTurn: whoseTurn,
+          orientation: userWithWhiteColor === userId ? 'white' : 'black',
         },
       })
     );
   }
 
+  const ttl = await redisClient.TTL(`leftTheGame:${userId}`);
+  if (ttl >= 0 && ttl < 5) {
+    return socket.send(
+      JSON.stringify({
+        method: 'gameClosed',
+      })
+    );
+  } else if (ttl >= 5) {
+    await redisClient.DEL(`leftTheGame:${userId}`);
+  }
+
   await redisClient.sAdd(`games:${payload.data.gameId}:users`, userId);
   await redisClient.hSet('userGames', userId, payload.data.gameId);
-  subscriber.subscribe(`games:${payload.data.gameId}`, async (message) => {
-    const parsedPayload = JSON.parse(message);
-
-    if (parsedPayload.method === 'makeMove') {
-      const connection = getUserConnection(parsedPayload.to);
-
-      if (!connection) return;
-      return connection.send(
-        JSON.stringify({
-          method: 'opponentMove',
-          move: parsedPayload.move,
-          whoseTurn: parsedPayload.to,
-        })
-      );
-    }
-
-    if (parsedPayload.method === 'deleteUserConnection') {
-      deleteUserConnection(parsedPayload.userId);
-      subscriber.unsubscribe(`games:${payload.data.gameId}`);
-    }
-
-    const players = await redisClient.sMembers(
-      `games:${payload.data.gameId}:users`
-    );
-
-    players.forEach((player) => {
-      const connection = getUserConnection(player);
-      if (connection) {
-        connection.send(message);
-      }
-    });
-  });
+  subscriber.subscribe(`games:${payload.data.gameId}`, onMessage);
 
   addUserConnection(userId, socket);
 
@@ -219,18 +268,55 @@ export async function handleMakeMove(
 }
 
 export async function handleGameEnd(
-  socket: any,
   userId: string,
   payload: {
     method: string;
-    data: { gameId: string };
+    data: { gameId: string; reason: string };
   }
 ) {
-  //TODO: Store all game data in MongoDb with updated status of Game and gameEnd reason!
+  const currentUserGame = await redisClient.hGet('userGames', userId);
 
-  const players = await redisClient.sMembers(
-    `games:${payload.data.gameId}:users`
+  if (currentUserGame !== payload.data.gameId) return;
+
+  if (payload.data.reason !== 'Won' && payload.data.reason !== 'Draw') return;
+
+  let opponentPlayerUserId;
+
+  const players = await redisClient.sMembers(`games:${currentUserGame}:users`);
+
+  if (players[0] === userId) {
+    opponentPlayerUserId = players[1];
+  } else {
+    opponentPlayerUserId = players[0];
+  }
+
+  const userIdOfPlayerWithWhiteColor = await redisClient.hGet(
+    `games:${currentUserGame}`,
+    'white'
   );
+  const userIdOfPlayerWithBlackColor = await redisClient.hGet(
+    `games:${currentUserGame}`,
+    'black'
+  );
+  const gameState = await redisClient.hGet(`games:${currentUserGame}`, 'state');
+
+  await GameModel.create({
+    gameId: payload.data.gameId,
+    gameResult: payload.data.reason,
+    winner: payload.data.reason === 'Won' ? userId : null,
+    loser: payload.data.reason === 'Won' ? opponentPlayerUserId : null,
+    gameState: gameState,
+    userIdOfPlayerWithWhiteColor: userIdOfPlayerWithWhiteColor,
+    userIdOfPlayerWithBlackColor: userIdOfPlayerWithBlackColor,
+  });
+
+  await redisClient.HDEL(`games:${payload.data.gameId}`, [
+    'state',
+    'status',
+    'whoseTurn',
+    'white',
+    'black',
+  ]);
 
   players.forEach((player) => {
     const isDeleted = deleteUserConnection(player);

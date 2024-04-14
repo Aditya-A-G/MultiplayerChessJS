@@ -4,6 +4,14 @@ import { redisClient } from '../../config/redis';
 
 export const createGame = async (req: Request, res: Response) => {
   try {
+    const userId = req.user?._id.toString() as string;
+
+    const onGoingGameOfPlayer = await redisClient.hGet('userGames', userId);
+
+    if (onGoingGameOfPlayer) {
+      await redisClient.EXPIRE(`leftTheGame:${userId}`, 1);
+    }
+
     const gameId = uuidv4();
 
     await redisClient.hSet(`games:${gameId}`, {

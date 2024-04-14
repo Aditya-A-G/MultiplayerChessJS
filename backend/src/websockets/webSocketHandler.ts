@@ -7,6 +7,8 @@ import {
   handleJoinGame,
   handleMakeMove,
 } from '../api/sockets/gameHandler';
+import { redisClient, subscriber } from '../config/redis';
+import { deleteUserConnection } from '../store/user';
 
 const wss = new WebSocketServer({ noServer: true });
 
@@ -44,13 +46,21 @@ export async function handleWebSocketUpgrade(
   upgradeWebSocket(request, socket, head, userId);
 }
 
+function heartbeat(socket: any) {
+  socket.isAlive = true;
+}
+
 export function handleWebSocketConnection(socket: any, userId: string) {
   socket.userId = userId;
+  socket.isAlive = true;
 
   socket.on('message', (message: string) => {
     const payload = JSON.parse(message);
 
     switch (payload.method) {
+      case 'ping':
+        heartbeat(socket);
+        break;
       case 'joinGame':
         handleJoinGame(socket, userId, payload);
         break;
@@ -58,7 +68,7 @@ export function handleWebSocketConnection(socket: any, userId: string) {
         handleMakeMove(socket, userId, payload);
         break;
       case 'endGame':
-        handleGameEnd(socket, userId, payload);
+        handleGameEnd(userId, payload);
         break;
       default:
         console.log(
@@ -67,6 +77,57 @@ export function handleWebSocketConnection(socket: any, userId: string) {
         socket.send('thanks for your message!');
     }
   });
+
+  socket.on('close', async () => {
+    if (socket.hasUserLeftTheGame === true) return;
+
+    const onGoingGameOfPlayer = await redisClient.hGet(
+      'userGames',
+      socket.userId
+    );
+
+    if (!onGoingGameOfPlayer) return;
+
+    deleteUserConnection(socket.userId);
+
+    subscriber.unsubscribe(onGoingGameOfPlayer);
+
+    await redisClient.SET(`leftTheGame:${socket.userId}`, socket.userId, {
+      EX: 15,
+      NX: true,
+    });
+  });
 }
 
 wss.on('connection', handleWebSocketConnection);
+
+const interval = setInterval(function ping() {
+  wss.clients.forEach(async function each(socket: any) {
+    if (socket.isAlive === false) {
+      socket.hasUserLeftTheGame = true;
+
+      deleteUserConnection(socket.userId);
+
+      const onGoingGameOfPlayer = await redisClient.hGet(
+        'userGames',
+        socket.userId
+      );
+
+      if (!onGoingGameOfPlayer) return socket.terminate();
+
+      subscriber.unsubscribe(onGoingGameOfPlayer);
+
+      await redisClient.SET(`leftTheGame:${socket.userId}`, socket.userId, {
+        EX: 15,
+      });
+
+      return socket.terminate();
+    }
+
+    socket.isAlive = false;
+  });
+}, 1000);
+
+wss.on('close', function close() {
+  clearInterval(interval);
+});
