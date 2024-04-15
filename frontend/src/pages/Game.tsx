@@ -121,7 +121,7 @@ function Game() {
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(95), 500);
-
+    // Todo extract this websocket url into env variable
     ws.current = new WebSocket('ws://localhost:3000/');
 
     ws.current.onerror = (error) => {
