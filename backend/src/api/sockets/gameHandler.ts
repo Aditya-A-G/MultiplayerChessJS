@@ -5,6 +5,7 @@ import {
   getUserConnection,
 } from '../../store/user';
 import { GameModel } from '../models/gameModel';
+import { UserModel } from '../models/userModel';
 
 function getGameIdFromChannel(channel: string): string | null {
   const match = channel.match(/^games:(.*)$/);
@@ -300,7 +301,7 @@ export async function handleGameEnd(
   );
   const gameState = await redisClient.hGet(`games:${currentUserGame}`, 'state');
 
-  await GameModel.create({
+  const newGame = await GameModel.create({
     gameId: payload.data.gameId,
     gameResult: payload.data.reason,
     winner: payload.data.reason === 'Won' ? userId : null,
@@ -309,6 +310,11 @@ export async function handleGameEnd(
     userIdOfPlayerWithWhiteColor: userIdOfPlayerWithWhiteColor,
     userIdOfPlayerWithBlackColor: userIdOfPlayerWithBlackColor,
   });
+
+  await UserModel.updateMany(
+    { _id: { $in: [userId, opponentPlayerUserId] } },
+    { $push: { games: newGame._id } }
+  );
 
   await redisClient.HDEL(`games:${payload.data.gameId}`, [
     'state',

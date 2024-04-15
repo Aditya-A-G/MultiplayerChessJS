@@ -1,5 +1,6 @@
 import express from 'express';
 import * as authController from '../controllers/authController';
+import * as userController from '../controllers/userController';
 import { isAuthenticated } from '../middlewares/authMiddleware';
 
 const router = express.Router();
@@ -12,5 +13,6 @@ router.get(
   isAuthenticated,
   authController.getAuthenticatedStatus
 );
+router.get('/games', isAuthenticated, userController.getGames);
 
 export default router;

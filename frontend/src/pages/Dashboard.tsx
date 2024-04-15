@@ -1,17 +1,47 @@
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Separator from '@/components/ui/separator';
-import { createNewGame } from '@/lib/api';
+import { createNewGame, getUserGames } from '@/lib/api';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+interface Game {
+  gameId: string;
+  gameResult: 'Draw' | 'Won';
+  winner: string | null;
+  loser: string | null;
+  gameState: string;
+  userIdOfPlayerWithWhiteColor: string;
+  userIdOfPlayerWithBlackColor: string;
+}
 
 function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [createGameError, setCreateGameError] = useState<null | string>(null);
-
+  const [games, setGames] = useState<Game[]>([]);
+  const [userId, setUserId] = useState();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function fetchUserGames() {
+      const data = await getUserGames();
+      setUserId(data.userId);
+      setGames(data.games);
+    }
+
+    fetchUserGames();
+  }, []);
 
   async function createGame() {
     setIsLoading(true);
@@ -66,6 +96,39 @@ function Dashboard() {
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl lg:text-4xl">HISTORY</CardTitle>
           </CardHeader>
+          <CardContent className="w-full">
+            <Table>
+              <TableCaption>A list of your previous games.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>No</TableHead>
+                  <TableHead className="text-center">Winner</TableHead>
+                  <TableHead className="text-center">Result</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {games.map((game, index) => {
+                  let winner;
+                  if (userId === game.winner) {
+                    winner = 'You';
+                  } else if (userId === game.loser) {
+                    winner = 'Opponent';
+                  } else {
+                    winner = 'No One';
+                  }
+                  return (
+                    <TableRow key={game.gameId}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell className="text-center">{winner}</TableCell>
+                      <TableCell className="text-center">
+                        {game.gameResult}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
         </div>
       </section>
     </main>

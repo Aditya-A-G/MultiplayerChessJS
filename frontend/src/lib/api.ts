@@ -44,3 +44,8 @@ export const createNewGame = async () => {
   const response = await axiosInstance.post(`${API_BASE_URL}/games/`);
   return response.data;
 };
+
+export const getUserGames = async () => {
+  const response = await axiosInstance.get(`${API_BASE_URL}/users/games`);
+  return response.data;
+};
