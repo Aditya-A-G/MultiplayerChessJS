@@ -16,6 +16,8 @@ connectWithRetry();
 app.use(morgan('dev'));
 app.use(helmet());
 
+app.enable('trust proxy');
+
 app.use(
   cors({
     origin: function (origin, callback) {

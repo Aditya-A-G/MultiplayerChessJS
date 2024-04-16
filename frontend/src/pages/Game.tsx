@@ -121,8 +121,8 @@ function Game() {
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(95), 500);
-    // Todo extract this websocket url into env variable
-    ws.current = new WebSocket('ws://localhost:3000/');
+
+    ws.current = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL);
 
     ws.current.onerror = (error) => {
       console.error(error);
@@ -156,6 +156,7 @@ function Game() {
         const pingPayload = {
           method: 'ping',
         };
+
         ws.current?.send(JSON.stringify(pingPayload));
       }, 500); // 500ms
 

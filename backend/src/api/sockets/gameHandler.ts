@@ -279,8 +279,6 @@ export async function handleGameEnd(
 
   if (currentUserGame !== payload.data.gameId) return;
 
-  if (payload.data.reason !== 'Won' && payload.data.reason !== 'Draw') return;
-
   let opponentPlayerUserId;
 
   const players = await redisClient.sMembers(`games:${currentUserGame}:users`);
@@ -301,20 +299,22 @@ export async function handleGameEnd(
   );
   const gameState = await redisClient.hGet(`games:${currentUserGame}`, 'state');
 
-  const newGame = await GameModel.create({
-    gameId: payload.data.gameId,
-    gameResult: payload.data.reason,
-    winner: payload.data.reason === 'Won' ? userId : null,
-    loser: payload.data.reason === 'Won' ? opponentPlayerUserId : null,
-    gameState: gameState,
-    userIdOfPlayerWithWhiteColor: userIdOfPlayerWithWhiteColor,
-    userIdOfPlayerWithBlackColor: userIdOfPlayerWithBlackColor,
-  });
+  if (payload.data.reason === 'Won' || payload.data.reason === 'Draw') {
+    const newGame = await GameModel.create({
+      gameId: payload.data.gameId,
+      gameResult: payload.data.reason,
+      winner: payload.data.reason === 'Won' ? userId : null,
+      loser: payload.data.reason === 'Won' ? opponentPlayerUserId : null,
+      gameState: gameState,
+      userIdOfPlayerWithWhiteColor: userIdOfPlayerWithWhiteColor,
+      userIdOfPlayerWithBlackColor: userIdOfPlayerWithBlackColor,
+    });
 
-  await UserModel.updateMany(
-    { _id: { $in: [userId, opponentPlayerUserId] } },
-    { $push: { games: newGame._id } }
-  );
+    await UserModel.updateMany(
+      { _id: { $in: [userId, opponentPlayerUserId] } },
+      { $push: { games: newGame._id } }
+    );
+  }
 
   await redisClient.HDEL(`games:${payload.data.gameId}`, [
     'state',
