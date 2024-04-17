@@ -5,7 +5,7 @@ import cors from 'cors';
 import api from './api';
 import passport from './config/passport';
 import sessionParser from './config/session';
-import { ALLOWED_ORIGINS } from './config/config';
+import { ALLOWED_ORIGIN } from './config/config';
 import { connectWithRetry } from './config/mongoDb';
 import * as middlewares from './middlewares';
 
@@ -13,7 +13,12 @@ const app = express();
 
 connectWithRetry();
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined'));
+} else {
+  app.use(morgan('dev'));
+}
+
 app.use(helmet());
 
 app.enable('trust proxy');
@@ -21,7 +26,7 @@ app.enable('trust proxy');
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+      if (ALLOWED_ORIGIN === origin) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));

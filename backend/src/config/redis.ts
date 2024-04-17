@@ -1,13 +1,21 @@
 import { createClient } from 'redis';
-import { REDIS_URL, REDIS_PORT } from './config';
+import {
+  REDIS_USERNAME,
+  REDIS_PASSWORD,
+  REDIS_HOST,
+  REDIS_PORT,
+} from './config';
 import { handleGameEnd } from '../api/sockets/gameHandler';
 
 const redisClient = createClient({
+  username: REDIS_USERNAME,
+  password: REDIS_PASSWORD,
   socket: {
-    host: REDIS_URL,
+    host: REDIS_HOST,
     port: Number(REDIS_PORT),
   },
 });
+
 const publisher = redisClient;
 
 redisClient.connect().catch(console.error);
