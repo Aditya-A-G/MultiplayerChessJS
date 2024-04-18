@@ -1,6 +1,5 @@
-import request from 'supertest'
-
-import app from '../../src/app'
+import request from 'supertest';
+import app from '../../src/app';
 
 describe('GET /api/v1/test', () => {
   it('responds with a json message', (done) => {
@@ -14,6 +13,6 @@ describe('GET /api/v1/test', () => {
           message: 'API - 👋🌎🌍🌏',
         },
         done
-      )
-  })
-})
+      );
+  });
+});

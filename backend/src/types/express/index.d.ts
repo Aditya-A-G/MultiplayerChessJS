@@ -1,5 +1,5 @@
 declare namespace Express {
-  interface User {
+  export interface User {
     _id: string;
   }
 }
