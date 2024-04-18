@@ -4,7 +4,7 @@
   "description": " MultiPlayer Chess Game",
   "main": "src/index.ts",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "lint": "eslint src ",
