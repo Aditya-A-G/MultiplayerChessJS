@@ -158,7 +158,7 @@ function Game() {
         };
 
         ws.current?.send(JSON.stringify(pingPayload));
-      }, 500); // 500ms
+      }, 300); // 300ms
 
       setTimeout(() => {
         const joinGamePayload = {
@@ -167,7 +167,7 @@ function Game() {
         };
 
         ws.current?.send(JSON.stringify(joinGamePayload));
-      }, 2000); // 2 seconds
+      }, 1000); // 1 seconds
     };
 
     ws.current.onclose = () => {

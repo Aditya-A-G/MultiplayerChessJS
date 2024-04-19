@@ -93,7 +93,7 @@ export function handleWebSocketConnection(socket: any, userId: string) {
     subscriber.unsubscribe(onGoingGameOfPlayer);
 
     await redisClient.SET(`leftTheGame:${socket.userId}`, socket.userId, {
-      EX: 15,
+      EX: 20,
       NX: true,
     });
   });
@@ -118,7 +118,7 @@ const interval = setInterval(function ping() {
       subscriber.unsubscribe(onGoingGameOfPlayer);
 
       await redisClient.SET(`leftTheGame:${socket.userId}`, socket.userId, {
-        EX: 15,
+        EX: 20,
       });
 
       return socket.terminate();
@@ -126,7 +126,7 @@ const interval = setInterval(function ping() {
 
     socket.isAlive = false;
   });
-}, 1000);
+}, 3000);
 
 wss.on('close', function close() {
   clearInterval(interval);
