@@ -12,6 +12,7 @@ const sessionParser = session({
     secure: NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 10000 * 60 * 60 * 24,
+    sameSite: 'none',
   },
   resave: false,
   saveUninitialized: false,
