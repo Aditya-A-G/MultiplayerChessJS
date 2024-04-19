@@ -4,6 +4,7 @@ import {
   REDIS_PASSWORD,
   REDIS_HOST,
   REDIS_PORT,
+  NODE_ENV,
 } from './config';
 
 import { handleGameEnd } from '../api/sockets/gameHandler';
@@ -16,23 +17,60 @@ function getUserIdFromKey(key: string): string | null {
 let redisClient: RedisClientType;
 let publisher: RedisClientType;
 let subscriber: RedisClientType;
+
 (async (): Promise<any> => {
-  redisClient = createClient({
-    username: REDIS_USERNAME,
-    password: REDIS_PASSWORD,
-    socket: {
-      host: REDIS_HOST,
-      port: Number(REDIS_PORT),
-    },
-  });
-
-  publisher = redisClient;
-
   try {
+    if (NODE_ENV === 'production') {
+      redisClient = createClient({
+        url: `rediss://${REDIS_USERNAME}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`,
+      });
+    } else {
+      redisClient = createClient({
+        username: REDIS_USERNAME,
+        password: REDIS_PASSWORD,
+        socket: {
+          host: REDIS_HOST,
+          port: Number(REDIS_PORT),
+        },
+      });
+    }
+
+    redisClient.on('error', console.error);
+    redisClient.on('ready', () => {
+      console.log('Redis is Ready to use');
+    });
+    redisClient.on('connect', () => {
+      console.log('redis is trying to connect to server');
+    });
+    redisClient.on('end', () => {
+      console.log('connection has been closed');
+    });
+    redisClient.on('reconnecting', () => {
+      console.log('Redis is trying to re-connect to server');
+    });
+
+    publisher = redisClient;
+
     await redisClient.connect();
+
     subscriber = redisClient.duplicate();
+
+    subscriber.on('error', console.error);
+    subscriber.on('ready', () => {
+      console.log('Redis is Ready to use');
+    });
+    subscriber.on('connect', () => {
+      console.log('redis is trying to connect to server');
+    });
+    subscriber.on('end', () => {
+      console.log('connection has been closed');
+    });
+    subscriber.on('reconnecting', () => {
+      console.log('Redis is trying to re-connect to server');
+    });
+
     await subscriber.connect();
-    redisClient.CONFIG_SET('notify-keyspace-events', 'Ex');
+
     subscriber.subscribe('__keyevent@0__:expired', async (message) => {
       const expiredKey = message;
 
