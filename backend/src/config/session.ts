@@ -1,7 +1,7 @@
 import session from 'express-session';
 import RedisStore from 'connect-redis';
 import { redisClient } from './redis';
-import { SESSION_SECRET } from './config';
+import { NODE_ENV, SESSION_SECRET } from './config';
 
 const sessionParser = session({
   store: new RedisStore({
@@ -9,7 +9,7 @@ const sessionParser = session({
   }),
   secret: SESSION_SECRET,
   cookie: {
-    secure: false,
+    secure: NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 10000 * 60 * 60 * 24,
   },
