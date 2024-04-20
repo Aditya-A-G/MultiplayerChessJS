@@ -1,5 +1,9 @@
+import { useNavigate } from 'react-router-dom';
+
 function App() {
-  return <h1>Hello World</h1>;
+  const navigate = useNavigate();
+
+  navigate('/dashboard');
 }
 
 export default App;
