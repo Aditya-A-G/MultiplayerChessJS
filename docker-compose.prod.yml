@@ -5,6 +5,13 @@ services:
       - "80:80"
 
   backend:
+    deploy:
+      replicas: 2
+      restart_policy: 
+        condition: any
+      update_config:
+        parallelism: 1
+        delay: 60s
     build: 
       context: ./backend
       dockerfile: Dockerfile
