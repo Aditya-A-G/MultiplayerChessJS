@@ -13,6 +13,7 @@ services:
     build: 
       context: ./backend
       dockerfile: Dockerfile
+    image: aditya360/multiplayer-chess-backend
     environment:
       - PORT=3000
 
