@@ -4,6 +4,7 @@ function App() {
   const navigate = useNavigate();
 
   navigate('/dashboard');
+  return <h1>Hello World</h1>;
 }
 
 export default App;
