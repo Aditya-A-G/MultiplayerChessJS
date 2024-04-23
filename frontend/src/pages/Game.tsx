@@ -100,7 +100,7 @@ function Game() {
         setAlertTitle('Opponent Won, Try Again!');
         setOpen(true);
       } else if (updatedGame.isDraw()) {
-        setAlertTitle("It'a a Draw, Try Again!");
+        setAlertTitle("It's a Draw, Try Again!");
         setOpen(true);
       }
       setIsYourTurn(true);
@@ -239,7 +239,7 @@ function Game() {
         })
       );
     } else if (isDraw) {
-      setAlertTitle("It'a a Draw, Try Again!");
+      setAlertTitle("It's a Draw, Try Again!");
       setOpen(true);
 
       ws.current?.send(
