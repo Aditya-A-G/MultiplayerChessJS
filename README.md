@@ -4,6 +4,8 @@ Welcome to MultiPlayer Chess, an open-source project that brings multiplayer fun
 
 # Media 
 
+![Screenshot from 2024-04-24 09-15-25](https://github.com/Aditya-A-G/MultiplayerChessJS/assets/65503300/147f09d7-0d8e-4198-862d-d5e863f8da80)
+
 https://github.com/Aditya-A-G/MultiplayerChessJS/assets/65503300/5b14829d-f6d0-4fe7-b592-7d9e0728e8fb
 
 ![dashboard](https://github.com/Aditya-A-G/MultiplayerChessJS/assets/65503300/69b34858-d0a4-4ce3-a163-8a80bb1b375c)
