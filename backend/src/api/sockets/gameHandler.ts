@@ -180,12 +180,6 @@ export async function handleJoinGame(
   );
 
   if (players.length == 2) {
-    await redisClient.hSet(
-      `games:${payload.data.gameId}`,
-      'whoseTurn',
-      players[0]
-    );
-
     await redisClient.hSet(`games:${payload.data.gameId}`, 'black', userId);
 
     socket.send(
@@ -209,7 +203,7 @@ export async function handleJoinGame(
         data: {
           gameStatus: 'gameStarted',
           gameState: gameState,
-          whoseTurn: players[0],
+          whoseTurn: whoseTurn,
         },
       })
     );
@@ -217,6 +211,8 @@ export async function handleJoinGame(
   }
 
   await redisClient.hSet(`games:${payload.data.gameId}`, 'white', userId);
+
+  await redisClient.hSet(`games:${payload.data.gameId}`, 'whoseTurn', userId);
 
   return socket.send(
     JSON.stringify({
