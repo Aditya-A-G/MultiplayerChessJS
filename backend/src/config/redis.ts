@@ -71,6 +71,10 @@ let subscriber: RedisClientType;
 
     await subscriber.connect();
 
+    if (NODE_ENV === 'development') {
+      redisClient.CONFIG_SET('notify-keyspace-events', 'Ex');
+    }
+
     subscriber.subscribe('__keyevent@0__:expired', async (message) => {
       const expiredKey = message;
 
