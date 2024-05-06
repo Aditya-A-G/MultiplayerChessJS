@@ -1,11 +1,12 @@
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Separator from '@/components/ui/separator';
-import { createNewGame, getUserGames } from '@/lib/api';
+import { createNewGame } from '@/lib/api';
+import useUserGames from '@/hooks/useUserGames';
 import {
   Table,
   TableBody,
@@ -16,32 +17,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-interface Game {
-  gameId: string;
-  gameResult: 'Draw' | 'Won';
-  winner: string | null;
-  loser: string | null;
-  gameState: string;
-  userIdOfPlayerWithWhiteColor: string;
-  userIdOfPlayerWithBlackColor: string;
-}
-
 function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [createGameError, setCreateGameError] = useState<null | string>(null);
-  const [games, setGames] = useState<Game[]>([]);
-  const [userId, setUserId] = useState();
+  const { games, userId } = useUserGames();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    async function fetchUserGames() {
-      const data = await getUserGames();
-      setUserId(data.userId);
-      setGames(data.games);
-    }
-
-    fetchUserGames();
-  }, []);
 
   async function createGame() {
     setIsLoading(true);
