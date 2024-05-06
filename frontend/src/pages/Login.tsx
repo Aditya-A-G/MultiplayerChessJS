@@ -1,8 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { loginUser } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
+import useRedirectIfAuthenticated from '@/hooks/useRedirectIfAuthenticated';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
@@ -12,9 +16,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { loginUser } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,14 +28,9 @@ export default function Login() {
   });
 
   const navigate = useNavigate();
-  const { isAuthenticated, login } = useAuth();
+  const { login } = useAuth();
 
-  // eslint-disable-next-line consistent-return
-  useEffect(() => {
-    if (isAuthenticated) {
-      return navigate('/dashboard');
-    }
-  }, [isAuthenticated, navigate]);
+  useRedirectIfAuthenticated();
 
   async function onSubmit(formData: { username: string; password: string }) {
     setIsLoading(true);
