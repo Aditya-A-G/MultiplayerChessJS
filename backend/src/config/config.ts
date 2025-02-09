@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 export const MONGO_IP = process.env.MONGO_IP || 'mongo';
 export const MONGO_PORT = process.env.MONGO_PORT || 27017;
 export const MONGO_USER = process.env.MONGO_USER;
@@ -10,3 +12,4 @@ export const SESSION_SECRET = process.env.SESSION_SECRET || 'dev';
 export const ALLOWED_ORIGIN =
   process.env.ALLOWED_ORIGIN || 'http://localhost:8080';
 export const NODE_ENV = process.env.NODE_ENV || 'development';
+export const PORT = process.env.PORT || 5000;
