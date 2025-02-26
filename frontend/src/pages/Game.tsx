@@ -389,6 +389,7 @@ function Game() {
                       <Flag className="h-4 w-4 mr-2" />
                       Resign
                     </Button>
+
                     <Button variant="outline" size="sm" className="flex-1">
                       <MessageSquare className="h-4 w-4 mr-2" />
                       Offer Draw
@@ -449,7 +450,9 @@ function Game() {
               >
                 Return to Dashboard
               </Button>
-              <AlertDialogCancel>View Board</AlertDialogCancel>
+              {alertTitle !== 'game not present' && (
+                <AlertDialogCancel>View Board</AlertDialogCancel>
+              )}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
