@@ -20,20 +20,9 @@ let subscriber: RedisClientType;
 
 (async (): Promise<any> => {
   try {
-    if (NODE_ENV === 'production') {
-      redisClient = createClient({
-        url: `rediss://${REDIS_USERNAME}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`,
-      });
-    } else {
-      redisClient = createClient({
-        username: REDIS_USERNAME,
-        password: REDIS_PASSWORD,
-        socket: {
-          host: REDIS_HOST,
-          port: Number(REDIS_PORT),
-        },
-      });
-    }
+    redisClient = createClient({
+      url: `rediss://${REDIS_USERNAME}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`,
+    });
 
     redisClient.on('error', console.error);
     redisClient.on('ready', () => {

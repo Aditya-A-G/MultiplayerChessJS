@@ -1,20 +1,8 @@
 import mongoose from 'mongoose';
 
-import {
-  MONGO_USER,
-  MONGO_PASSWORD,
-  MONGO_IP,
-  MONGO_PORT,
-  NODE_ENV,
-} from './config';
+import { MONGO_USER, MONGO_PASSWORD, MONGO_IP } from './config';
 
-let mongoURL: string;
-
-if (NODE_ENV === 'production') {
-  mongoURL = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@multiplayerchess.ymy3nyq.mongodb.net/?retryWrites=true&w=majority&appName=MultiplayerChess`;
-} else {
-  mongoURL = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`;
-}
+let mongoURL = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}/?retryWrites=true&w=majority&appName=MultiplayerChess`;
 
 export const connectWithRetry = () => {
   mongoose
