@@ -43,27 +43,30 @@ export const signUp = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  passport.authenticate('local', (err: any, user: Express.User & { username: string }) => {
-    if (err) {
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-
-    if (!user) {
-      return res.status(401).json({ error: 'Authentication Failed' });
-    }
-
-    req.login(user, (loginErr) => {
-      if (loginErr) {
+  passport.authenticate(
+    'local',
+    (err: any, user: Express.User & { username: string }) => {
+      if (err) {
         return res.status(500).json({ error: 'Internal Server Error' });
       }
-      
-      const { username } = user;
 
-      return res
-        .status(200)
-        .json({ message: 'Login successful', username, status: 'success' });
-    });
-  })(req, res);
+      if (!user) {
+        return res.status(401).json({ error: 'Authentication Failed' });
+      }
+
+      req.login(user, (loginErr) => {
+        if (loginErr) {
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        const { username } = user;
+
+        return res
+          .status(200)
+          .json({ message: 'Login successful', username, status: 'success' });
+      });
+    }
+  )(req, res);
 };
 
 export const logOut = async (
