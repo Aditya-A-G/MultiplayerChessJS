@@ -40,7 +40,14 @@ export default function Login() {
 
       if (data.status === 'success') {
         login();
-        navigate('/dashboard');
+        // check if user is part of a game by checking the local storage
+        const gameId = localStorage.getItem('gameId');
+        if (gameId) {
+          localStorage.removeItem('gameId');
+          navigate(`/games/${gameId}`);
+        } else {
+          navigate('/dashboard');
+        }
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
